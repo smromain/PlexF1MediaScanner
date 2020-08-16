@@ -1,45 +1,43 @@
 PlexF1MediaScanner
 ==================
 
-The way that Formula1 boadcasts is organized doesn't fit very well with ether Movies or TV Series. Adding them as home movies is one unsatisfactory option, but instead I tried to make a Formula1 Media Scanner.
- 
-It is working for my purpose, and I take no responsibility should it cause you any harm, but you are free to reuse and modify it.
- 
-How it works:
- 
-I typically have all my Formula1 media in one folder, and one broadcast can be named i.e. formula1.2014.spain.grand.prix.qualifying.uncut.720p.hdtv.x264.mkv. The Formula1 Media Scanner picks up the various parts of the file name using this regular expression:
-'(?P<show>.*?)[\._ ](?P<season>[0-9]{4})[\._ ](?P<location>.*?)[\.](?P<ep>.*?)\.(720p|HDTV|x254|1080p)'
- 
-In the above example it will find the following match:
-MATCH 1
-show [1-9] `formula1`
-season [10-14] `2014`
-location [15-20] `spain`
-ep [21-48] `grand.prix.qualifying.uncut`
-5. [49-53] `720p`
- 
- 
-The challenge here is to map this into a TV Series format. Basically a Formula1 episode is really a full weekend, containing many broadcasts, from buildup, FP1-3, Qualifying, race and others. However, one episode may only contain one media (disregarding stacking, as that is really sub optimal here).
-What I did instead was to assume that this library will only contain Formula1, and I named the show like Formula1 yyyy. So for the example above, the show would resolv to Formula1 2014.
-A series is then mapped to a location, but since series unfortunately only supports integer, I made a look up table to resolve location to Season number (This will have to be updated for years to come, only 2014 added).
-Under a given season (location) I add all the media pertaining to this location (weekend) as episodes.
-If it encounters a locations it doesn't recognize, it will still add the episode, but under season 99 (unknown)
- 
-Thinking out loud
-Ideally I could add a show as Formula1, add seasons by year, add Episodes as location. Opening one Episode allows you to play any file from that weekend, but I don't see how that can be done.
-This scanner should work well for others (motor)sports that are organized in a similar way, you have to update locations though.
-The locations could be added dynamically, but I have added them manually so I get the "Seasons" in the correct order of the calender.
- 
- 
-Install and use:
- 
-copy the attached file to /var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Scanners/Series/
-restart plexmediaserver
-Add a new library called Formula1 and add the folder containing F1 broadcasts
-Select Advanced and Scanner: Formula1
- 
-Bugs:
-You have to re-add the library when you get new files, because it adds a new show with the same name for the new files, why?
-The way it increments the episode numbers might be lost from scan to scan? Have not verified due to the bug above.
- 
-If you have suggestions how to fix the bugs, please let me know.
+Fork from [kennethx/PlexF1MediaScanner](https://github.com/kennethx/PlexF1MediaScanner). Props to them!
+
+This is a custom scanner for Plex for parsing data for Formula 1 race weekends. It should be the scanner for a library that **only**
+contains F1 content, it wont match anything else.
+
+## Installation
+
+- Copy the `Formula1.py` file to your Scanners directory, for Linux this is `/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Scanners/Series/`
+- Restart plexmediaserver to make the new scanner available to select
+- Add a new library called `Formula 1` (or whatever), add the folder containing F1 broadcasts.
+- Under `Advanced`, select `Formula1` as the scanner and `Personal Media Shows` for the agent
+
+## Folder Structure
+
+The script expects the media to be formatted similar to the following:
+
+```
+F1
+├── Formula.1.2020x05.70th-Anniversary-GB.Race.SkyF1HD.1080p
+│   ├── 01.Pre-Race.Buildup.mp4
+│   ├── 02.Race.Session.mp4
+│   ├── 03.Post-Race.Analysis.mp4
+│   └── poster.jpg
+└── Formula.1.2020x06.Spain.Qualifying.SkyF1HD.1080p
+    ├── 01.Pre-Qualifying.Buildup.mp4
+    ├── 02.Qualifying.Session.mp4
+    ├── 03.Post-Qualifying.Analysis.mp4
+    └── poster.jpg
+```
+
+Each Race weekend will show as a TV Show in Plex, with each event (eg Qualifying, Race) showing as a season inside that. Each video file will then show as an episode.
+
+Note that it does **not** pull in any metadata, something like [SportScanner](https://github.com/mmmmmtasty/SportScanner) could probably be updated to support pulling dynamic metadata but its probably overkill and could risk spoilers being dropped into the event description. If you put a file named `poster.jpg` in each directory then that will show in the plex ui (shoutout to [r/formula1](reddit.com/r/formula1/) for some nice posters).
+
+## Troubleshooting
+
+Regular expressions aren't perfect (especially mine) and if your file and directory structure doesnt match what I think it is then stuff wont appear in your library.
+To see what went wrong with detection, check out the log file (`/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Logs/Formula1.log`). 
+
+To force plex to retry, first get the ID of the your F1 Library (`/usr/lib/plexmediaserver/Plex\ Media\ Scanner --list`) then force an update: `/usr/lib/plexmediaserver/Plex\ Media\ Scanner --force --scan --refresh --section YOUR_SECTION_NUMBER`.
