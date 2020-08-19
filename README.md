@@ -11,11 +11,11 @@ contains F1 content, it wont match anything else.
 - Copy the `Formula1.py` file to your Scanners directory, for Linux this is `/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Scanners/Series/`
 - Restart plexmediaserver to make the new scanner available to select
 - Add a new library called `Formula 1` (or whatever), add the folder containing F1 broadcasts.
-- Under `Advanced`, select `Formula1` as the scanner and `Personal Media Shows` for the agent
+- Under `Advanced`, select `Formula1` as the scanner and `Personal Media Shows` for the agent. Also set `Seasons` to `Hide` (we only ever have 1 season per session).
 
 ## Folder Structure
 
-The script expects the media to be formatted similar to the following:
+The script expects the media to be formatted similar to the below:
 
 ```
 F1
@@ -31,7 +31,9 @@ F1
     └── poster.jpg
 ```
 
-Each Race weekend will show as a TV Show in Plex, with each event (eg Qualifying, Race) showing as a season inside that. Each video file will then show as an episode.
+Each F1 session will show as a TV Show in Plex, with each event (eg Qualifying, Race) showing as an episode inside that. Annoyingly you cannot have different sessions as different TV seasons without messing around with the folder structure. Here's what it looks like:
+
+![Plex Screenshot](screenshot.png "Plex Screenshot")
 
 Note that it does **not** pull in any metadata, something like [SportScanner](https://github.com/mmmmmtasty/SportScanner) could probably be updated to support pulling dynamic metadata but its probably overkill and could risk spoilers being dropped into the event description. If you put a file named `poster.jpg` in each directory then that will show in the plex ui (shoutout to [r/formula1](reddit.com/r/formula1/) for some nice posters).
 

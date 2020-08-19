@@ -62,23 +62,24 @@ def Scan(path, files, mediaList, subdirs, language=None, root=None):
             show = 'Formula 1'
             year = int(match.group('year').strip())
             show = "%s %s" % (show, year) # Make a composite show name like Formula1 + yyyy
-            location = match.group('location')
+            location = match.group('location').replace("-"," ")
 
-            locationidx = int(match.group('raceno').strip())
             # episode is just a meaningless index to get the different FP1-3, Qualifying, Race and other files to
             # be listed under a location i.e. Spain, which again is mapped to season number - as season can not contain a string
             episode = int(match.group('episode').strip())
 
             # description will be the displayed filename when you browse to a location (season number)
             description = (location + " " + match.group('description')).replace("."," ") # i.e. # spain grand prix free practice 3
+            library_name = "%sx%s: %s %s" %(year, match.group('raceno'), location, match.group('session'))
 
             logging.debug("show: %s" % show)
             logging.debug("location: %s" % location)
             logging.debug("episode: %s" % episode)
             logging.debug("description: %s" % description)
+            logging.debug("library_name: %s" % library_name)
 
             tv_show = Media.Episode(
-                "%s: %s" %(year, location),         # show (inc year(season))
+                library_name,         # show (inc year(season))
                 sessions[match.group('session')],   # season. Must be int, strings are not supported :(
                 episode,            # episode, indexed the files for a given show/location
                 description,        # includes location string and ep name i.e. Spain Grand Prix Qualifying
