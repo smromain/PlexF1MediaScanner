@@ -19,6 +19,7 @@ Custom scanner plugin for Plex Media Server for Formula 1 Broadcasts.
 import re, os, os.path
 import sys
 import logging
+import urllib
 
 # I needed some plex libraries, you may need to adjust your plex install location accordingly
 sys.path.append("/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Scanners/Series")
@@ -52,6 +53,15 @@ def Scan(path, files, mediaList, subdirs, language=None, root=None):
     # Run the select regexp for all media files.
     for i in files:
         logging.debug('Processing: %s' % i)
+
+        postername = i[:-3]+"png"
+        logging.debug("Downloading fake episode poster to: %s" % postername)
+        if not os.path.exists(postername):
+            try:
+                urllib.urlretrieve("https://raw.githubusercontent.com/potchin/PlexF1MediaScanner/master/episode_poster.png", postername)
+            except IOError as e:
+                logging.error("Unable to download poster: %s" % e)
+
         file = remove_prefix(i, root + '/')
 
         match = re.search(episode_regexp, file)

@@ -9,7 +9,6 @@ contains F1 content, it wont match anything else.
 ## Installation
 
 - Copy the `Formula1.py` file to your Scanners directory, for Linux this is `/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Scanners/Series/`
-- Restart plexmediaserver to make the new scanner available to select
 - Add a new library called `Formula 1` (or whatever), add the folder containing F1 broadcasts.
 - Under `Advanced`, select `Formula1` as the scanner and `Personal Media Shows` for the agent. Also set `Seasons` to `Hide` (we only ever have 1 season per session).
 
@@ -35,7 +34,7 @@ Each F1 session will show as a TV Show in Plex, with each event (eg Qualifying, 
 
 ![Plex Screenshot](screenshot.png "Plex Screenshot")
 
-Note that it does **not** pull in any metadata, something like [SportScanner](https://github.com/mmmmmtasty/SportScanner) could probably be updated to support pulling dynamic metadata but its probably overkill and could risk spoilers being dropped into the event description. If you put a file named `poster.jpg` in each directory then that will show in the plex ui (shoutout to [r/formula1](reddit.com/r/formula1/) for some nice posters).
+Note that it does **not** pull in any race-specific metadata, something like [SportScanner](https://github.com/mmmmmtasty/SportScanner) could probably be updated to support pulling dynamic metadata but its probably overkill and could risk spoilers being dropped into the event description. If you put a file named `poster.jpg` in each directory then that will show in the plex ui (shoutout to [r/formula1](reddit.com/r/formula1/) for some nice posters). The script does automatically drop in a fake poster for each episode, just so you dont get any spoilers in the auto-generated thumbnail images.
 
 ## Troubleshooting
 
