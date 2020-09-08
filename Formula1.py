@@ -20,6 +20,7 @@ import re, os, os.path
 import sys
 import logging
 import urllib
+import ssl
 
 # I needed some plex libraries, you may need to adjust your plex install location accordingly
 sys.path.append("/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Scanners/Series")
@@ -58,7 +59,8 @@ def Scan(path, files, mediaList, subdirs, language=None, root=None):
         logging.debug("Downloading fake episode poster to: %s" % postername)
         if not os.path.exists(postername):
             try:
-                urllib.urlretrieve("https://raw.githubusercontent.com/potchin/PlexF1MediaScanner/master/episode_poster.png", postername)
+                insecure_context = ssl._create_unverified_context()
+                urllib.urlretrieve("https://raw.githubusercontent.com/potchin/PlexF1MediaScanner/master/episode_poster.png", postername, context=insecure_context)
             except IOError as e:
                 logging.error("Unable to download poster: %s" % e)
 
