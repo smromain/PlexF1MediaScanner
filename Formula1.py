@@ -22,6 +22,7 @@ import logging
 import urllib
 import ssl
 
+
 # I needed some plex libraries, you may need to adjust your plex install location accordingly
 sys.path.append("/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Scanners/Series")
 sys.path.append("/usr/lib/plexmediaserver/Resources/Plug-ins-b23ab3896/Scanners.bundle/Contents/Resources/Common/")
@@ -60,6 +61,7 @@ def Scan(path, files, mediaList, subdirs, language=None, root=None):
         if not os.path.exists(postername):
             try:
                 insecure_context = ssl._create_unverified_context()
+
                 urllib.urlretrieve("https://raw.githubusercontent.com/potchin/PlexF1MediaScanner/master/episode_poster.png", postername, context=insecure_context)
             except IOError as e:
                 logging.error("Unable to download poster: %s" % e)
@@ -83,19 +85,30 @@ def Scan(path, files, mediaList, subdirs, language=None, root=None):
             # description will be the displayed filename when you browse to a location (season number)
             description = (location + " " + match.group('description')).replace("."," ") # i.e. # spain grand prix free practice 3
             library_name = "%sx%s: %s %s" %(year, match.group('raceno'), location, match.group('session'))
+            try:
+                session = sessions[match.group('session')]
+            except KeyError:
+                logging.warning(f'Couldnt match {match.group('session')} to a session. Defaulting to 0')
+                session = 0
 
             logging.debug("show: %s" % show)
             logging.debug("location: %s" % location)
             logging.debug("episode: %s" % episode)
             logging.debug("description: %s" % description)
+            logging.debug("session: %s" % session)
             logging.debug("library_name: %s" % library_name)
 
-            tv_show = Media.Episode(
-                library_name,         # show (inc year(season))
-                sessions[match.group('session')],   # season. Must be int, strings are not supported :(
-                episode,            # episode, indexed the files for a given show/location
-                description,        # includes location string and ep name i.e. Spain Grand Prix Qualifying
-                year)               # the actual year detected, same as used in part of the show name
+            try:
+                tv_show = Media.Episode(
+                    library_name,         # show (inc year(season))
+                    session,              # season. Must be int, strings are not supported :(
+                    episode,              # episode, indexed the files for a given show/location
+                    description,          # includes location string and ep name i.e. Spain Grand Prix Qualifying
+                    year)                 # the actual year detected, same as used in part of the show name
+
+            except Exception as e:
+                logging.error(e)
+                # sys.exit 1
 
             logging.debug("tv_show created")
             tv_show.parts.append(i)
