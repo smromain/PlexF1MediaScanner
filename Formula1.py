@@ -22,15 +22,10 @@ import logging
 import urllib
 import ssl
 
-
 # I needed some plex libraries, you may need to adjust your plex install location accordingly
-sys.path.append("/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Scanners/Series")
 sys.path.append("/usr/lib/plexmediaserver/Resources/Plug-ins-b23ab3896/Scanners.bundle/Contents/Resources/Common/")
 
-import Media, VideoFiles, Stack, Utils
-from mp4file import mp4file, atomsearch
-from pprint import pformat
-
+import Media, VideoFiles, Stack
 
 # Expected format (smcgill1969):
 # Formula.1.2020x05.70th-Anniversary-GB.Race.SkyF1HD.1080p/02.Race.Session.mp4
@@ -56,15 +51,16 @@ def Scan(path, files, mediaList, subdirs, language=None, root=None):
     for i in files:
         logging.debug('Processing: %s' % i)
 
-        postername = i[:-3]+"png"
-        logging.debug("Downloading fake episode poster to: %s" % postername)
-        if not os.path.exists(postername):
+        thumbnail = i[:-3]+"png"
+        logging.debug("Downloading fake episode thumbnail to: %s" % thumbnail)
+        if not os.path.exists(thumbnail):
             try:
                 insecure_context = ssl._create_unverified_context()
-
-                urllib.urlretrieve("https://raw.githubusercontent.com/potchin/PlexF1MediaScanner/master/episode_poster.png", postername, context=insecure_context)
+                urllib.urlretrieve("https://raw.githubusercontent.com/potchin/PlexF1MediaScanner/master/episode_poster.png", thumbnail, context=insecure_context)
+                # open permissions for the thumbnail
+                os.chmod(thumbnail, 0666)
             except IOError as e:
-                logging.error("Unable to download poster: %s" % e)
+                logging.error("Unable to download thumbnail: %s" % e)
 
         file = remove_prefix(i, root + '/')
 
@@ -88,7 +84,7 @@ def Scan(path, files, mediaList, subdirs, language=None, root=None):
             try:
                 session = sessions[match.group('session')]
             except KeyError:
-                logging.warning(f'Couldnt match {match.group('session')} to a session. Defaulting to 0')
+                logging.warning('Couldnt match session "%s", Defaulting to 0' % match.group('session'))
                 session = 0
 
             logging.debug("show: %s" % show)
@@ -135,10 +131,6 @@ def Scan(path, files, mediaList, subdirs, language=None, root=None):
 import sys
 
 if __name__ == '__main__':
-  print "Hello, world!"
-  path = sys.argv[1]
-  files = [os.path.join(path, file) for file in os.listdir(path)]
-  media = []
-  print("Files: %s" % files)
-  Scan(path, files, media, [])
-  print "Media:", media
+  print("You're not plex!")
+
+
