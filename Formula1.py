@@ -64,7 +64,8 @@ def download_art(filename, art_type, season, round, session, event, allow_fake=F
 
     found = False
     if round == 0:
-        logging.warn("Found invalid round, file may not be for a race weekend, eg testing")   
+        logging.warn("Found invalid round, file may not be for a race weekend, eg testing")
+        allow_fake = True
     else:
         logging.debug("Downloading artwork to: %s" % filename)
 
