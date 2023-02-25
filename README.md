@@ -22,19 +22,18 @@ F1
 │   ├── 01.Pre-Race.Buildup.mp4
 │   ├── 02.Race.Session.mp4
 │   ├── 03.Post-Race.Analysis.mp4
-│   └── poster.jpg
 └── Formula.1.2020x06.Spain.Qualifying.SkyF1HD.1080p
     ├── 01.Pre-Qualifying.Buildup.mp4
     ├── 02.Qualifying.Session.mp4
     ├── 03.Post-Qualifying.Analysis.mp4
-    └── poster.jpg
 ```
 
 Each F1 session will show as a TV Show in Plex, with each event (eg Qualifying, Race) showing as an episode inside that. Annoyingly you cannot have different sessions as different TV seasons without messing around with the folder structure. Here's what it looks like:
 
 ![Plex Screenshot](screenshot.png "Plex Screenshot")
 
-Note that it does **not** pull in any race-specific metadata, something like [SportScanner](https://github.com/mmmmmtasty/SportScanner) could probably be updated to support pulling dynamic metadata but its probably overkill and could risk spoilers being dropped into the event description. If you put a file named `poster.jpg` in each directory then that will show in the plex ui (shoutout to [r/formula1](reddit.com/r/formula1/) for some nice posters). The script does automatically drop in a fake poster for each episode, just so you dont get any spoilers in the auto-generated thumbnail images.
+The scanner (since I havent bothered writing a metadata agent) will try to pull some artwork from [thesportsdb.com](https://www.thesportsdb.com/league/4370) and will drop them into files on the filesystem. You probably could do some renaming and get
+[SportScanner](https://github.com/mmmmmtasty/SportScanner) to pull in all the metadata but since that's no longer maintained its less risky to just use thesportsdb.com directly and get plex to use local images.
 
 ## Troubleshooting
 
