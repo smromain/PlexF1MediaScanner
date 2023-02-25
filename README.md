@@ -9,7 +9,7 @@ contains F1 content, it wont match anything else.
 ## Installation
 
 - Copy the `Formula1.py` file to your Scanners directory, for Linux this is `/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Scanners/Series/`
-- Add a new library called `Formula 1` (or whatever), add the folder containing F1 broadcasts.
+- Add a new `TV shows` library called `Formula 1` (or whatever), add the folder containing F1 broadcasts.
 - Under `Advanced`, select `Formula1` as the scanner and `Personal Media Shows` for the agent. Also set `Seasons` to `Hide` (we only ever have 1 season per session).
 
 ## Folder Structure
