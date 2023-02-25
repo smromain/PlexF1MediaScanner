@@ -84,6 +84,8 @@ def download_art(filename, art_type, season, round, session, event, allow_fake=F
 
                 if " sprint " in session.lower():
                     session = "Grand Prix Sprint"
+                elif " qualifying " in session.lower():
+                    session = "Qualifying"
                 elif " race " in session.lower():
                     session = "Grand Prix"
 
@@ -103,7 +105,10 @@ def download_art(filename, art_type, season, round, session, event, allow_fake=F
 
     if not found:
         if allow_fake:
-            download_url("https://github.com/potchin/PlexF1MediaScanner/raw/master/episode_poster.png", filename)
+            if art_type == "strPoster":
+                download_url("https://www.thesportsdb.com/images/media/league/poster/4e1svi1605133041.jpg", filename)
+            else:
+                download_url("https://github.com/potchin/PlexF1MediaScanner/raw/master/episode_poster.png", filename)
         else:
             logging.warn("Unable to find art for event")
     return
