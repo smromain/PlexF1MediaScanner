@@ -51,7 +51,7 @@ def download_url(url, filename):
     except IOError as e:
         logging.error("Unable to download from url: %s to %s. Error: %s" % (url, filename, e))
 
-def download_art(filename, art_type, season, round, session, event):
+def download_art(filename, art_type, season, round, session, event, allow_fake=False):
     """Download and save artwork from thesportsdb
 
     season = year
@@ -62,48 +62,51 @@ def download_art(filename, art_type, season, round, session, event):
     if os.path.exists(filename):
         return
 
+    found = False
     if round == 0:
-        logging.warn("Found invalid round, file may not be for a race weekend, eg testing")
-        return
-    
-    logging.debug("Downloading artwork to: %s" % filename)
+        logging.warn("Found invalid round, file may not be for a race weekend, eg testing")   
+    else:
+        logging.debug("Downloading artwork to: %s" % filename)
 
-    try:
-        insecure_context = ssl._create_unverified_context()
-        dataurl = ' https://www.thesportsdb.com/api/v1/json/3/eventsround.php?id=4370&r=%s&s=%s' % (round, season)
-        logging.info("Pulling data from: %s" % dataurl)
-        eventdata = urllib.urlopen(dataurl, context=insecure_context)
-        sleep(2) #sportsdb API limit
-        eventdata = json.loads(eventdata.read())
+        try:
+            insecure_context = ssl._create_unverified_context()
+            dataurl = ' https://www.thesportsdb.com/api/v1/json/3/eventsround.php?id=4370&r=%s&s=%s' % (round, season)
+            logging.info("Pulling data from: %s" % dataurl)
+            eventdata = urllib.urlopen(dataurl, context=insecure_context)
+            sleep(2) #sportsdb API limit
+            eventdata = json.loads(eventdata.read())
 
-        # try to get an aimage specific to this session
-        found = False
-        for event in eventdata['events']:
-            # logging.critical(pformat(event))
-            # session is likely race/practice/qualy/sprint
-
-            if " sprint " in session.lower():
-                session = "Grand Prix Sprint"
-            elif " race " in session.lower():
-                session = "Grand Prix"
-
-            if event['strEvent'].lower().endswith(session.lower()):
-                if event[art_type]:
-                    download_url(event[art_type], filename)
-                    found = True
-                
-        # get any image for this round instead
-        if not found:
+            # try to get an aimage specific to this session
             for event in eventdata['events']:
-                if event[art_type]:
-                    download_url(event[art_type], filename)
-                    found = True
+                # logging.critical(pformat(event))
+                # session is likely race/practice/qualy/sprint
 
-        if not found:
+                if " sprint " in session.lower():
+                    session = "Grand Prix Sprint"
+                elif " race " in session.lower():
+                    session = "Grand Prix"
+
+                if event['strEvent'].lower().endswith(session.lower()):
+                    if event[art_type]:
+                        download_url(event[art_type], filename)
+                        found = True
+                    
+            # get any image for this round instead
+            if not found:
+                for event in eventdata['events']:
+                    if event[art_type]:
+                        download_url(event[art_type], filename)
+                        found = True
+        except Exception as e:
+            logging.critical("Unable to download artwork... %s" % e)
+
+    if not found:
+        if allow_fake:
+            download_url("https://github.com/potchin/PlexF1MediaScanner/raw/master/episode_poster.png", filename)
+        else:
             logging.warn("Unable to find art for event")
+    return
 
-    except Exception as e:
-        logging.critical("Unable to download artwork... %s" % e)
 
 
 
@@ -154,7 +157,7 @@ def Scan(path, files, mediaList, subdirs, language=None, root=None):
             download_art(posterfile, "strPoster", year, int(match.group('raceno')), match.group('session'), location)
 
             thumbnail=i[:-3]+"jpg"
-            download_art(thumbnail, "strThumb", year, int(match.group('raceno')), match.group('session'), location)
+            download_art(thumbnail, "strThumb", year, int(match.group('raceno')), match.group('session'), location, allow_fake=True)
 
             fanart=os.path.dirname(i)+"/fanart.jpg"
             download_art(fanart, "strThumb", year, int(match.group('raceno')), match.group('session'), location)
