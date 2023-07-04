@@ -32,7 +32,7 @@ import Media, VideoFiles, Stack
 
 # Expected format (smcgill1969):
 # Formula.1.2020x05.70th-Anniversary-GB.Race.SkyF1HD.1080p/02.Race.Session.mp4
-episode_regexp = 'Formula.1[\._ ](?P<year>[0-9]{4})x(?P<raceno>[0-9]{2})[\._ ](?P<location>.*?)[\._ ](?P<session>.*?).SkyF1HD.(1080p|SD)/(?P<episode>.*?)[\._ ](?P<description>.*?).mp4'
+episode_regexp = 'Formula.1[\._ ](?P<year>[0-9]{4})x(?P<raceno>[0-9]{2})[\._ ](?P<location>.*?)[\._ ](?P<session>.*?).SkyF1U?HD.(1080p|SD)/(?P<episode>.*?)[\._ ](?P<description>.*?).mp4'
 
 sessions = {}
 sessions['Practice'] = 1
