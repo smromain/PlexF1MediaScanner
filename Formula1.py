@@ -82,7 +82,9 @@ def download_art(filename, art_type, season, round, session, event, allow_fake=F
                 # logging.critical(pformat(event))
                 # session is likely race/practice/qualy/sprint
 
-                if " sprint " in session.lower():
+                if " shootout " in session.lower():
+                    session = "Sprint Shootout"
+                elif " sprint " in session.lower():
                     session = "Grand Prix Sprint"
                 elif " qualifying " in session.lower():
                     session = "Qualifying"
@@ -206,5 +208,3 @@ import sys
 
 if __name__ == '__main__':
   print("You're not plex!")
-
-
