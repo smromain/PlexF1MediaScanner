@@ -8,7 +8,8 @@ contains F1 content, it wont match anything else.
 
 ## Installation
 
-- Copy the `Formula1.py` file to your Scanners directory, for Linux this is `/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Scanners/Series/`
+- Create a new file called `f1.env` in the same directory as `Formula1.py` and add the path to the common library, eg `PLEX_SCANNER_LIBRARY_PATH="C:\Program Files\Plex\Plex Media Server\Resources\Plug-ins-f2c27da23\Scanners.bundle\Contents\Resources\Common"` (there is a sample in the repo).
+- Copy the `Formula1.py` file and the `f1.env` file to your Scanners/Series directory, for Linux this is `/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Scanners/Series/` and for windows this is `C:\Users\<username>\AppData\Local\Plex Media Server\Scanners\Series\`
 - Add a new `TV shows` library called `Formula 1` (or whatever), add the folder containing F1 broadcasts.
 - Under `Advanced`, select `Formula1` as the scanner and `Personal Media Shows` for the agent. Also set `Seasons` to `Hide` (we only ever have 1 season per session).
 

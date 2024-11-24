@@ -25,14 +25,30 @@ import json
 from time import sleep
 from pprint import pformat
 
-# I needed some plex libraries, you may need to adjust your plex install location accordingly
-sys.path.append("/usr/lib/plexmediaserver/Resources/Plug-ins-b23ab3896/Scanners.bundle/Contents/Resources/Common/")
+is_windows = hasattr(sys, 'getwindowsversion')
+data_dir = os.getenv('LOCALAPPDATA') if is_windows else os.getenv('PLEX_HOME')
+scanner_path = os.path.join(data_dir, 'Plex Media Server', 'Scanners', 'Series')
+
+# Check for and load environment variables from f1.env
+env_path = os.path.join(scanner_path, 'f1.env')
+if os.path.exists(env_path):
+    with open(env_path) as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#'):
+                key, value = line.split('=', 1)
+                os.environ[key] = value
+
+
+
+# Notate in the f1.env file the path to the common library, eg PLEX_SCANNER_LIBRARY_PATH="C:\Program Files\Plex\Plex Media Server\Resources\Plug-ins-f2c27da23\Scanners.bundle\Contents\Resources\Common"
+sys.path.append(os.getenv('PLEX_SCANNER_LIBRARY_PATH'))
 
 import Media, VideoFiles, Stack
 
 # Expected format (smcgill1969):
 # Formula.1.2020x05.70th-Anniversary-GB.Race.SkyF1HD.1080p/02.Race.Session.mp4
-episode_regexp = 'Formula.1[\._ ](?P<year>[0-9]{4})x(?P<raceno>[0-9]{2})[\._ ](?P<location>.*)[\._ ](?P<session>.*?).SkyF1U?HD.(1080p|SD)/(?P<episode>.*?)[\._ ](?P<description>.*?).mp4'
+episode_regexp = r'Formula.1[\._ ](?P<year>[0-9]{4})x(?P<raceno>[0-9]{2})[\._ ](?P<location>.*)[\._ ](?P<session>.*?).SkyF1U?HD.(1080p|SD|4K)\\(?P<episode>.*?)[\._ ](?P<description>.*?).mp4'
 
 sessions = {}
 sessions['Practice'] = 1
@@ -120,8 +136,7 @@ def download_art(filename, art_type, season, round, session, event, allow_fake=F
 
 # Look for episodes.
 def Scan(path, files, mediaList, subdirs, language=None, root=None):
-    logging.basicConfig(filename='/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Logs/Formula1.log', level=logging.DEBUG)
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(filename=os.path.join(data_dir, 'Plex Media Server', 'Logs', 'Formula1.log'), level=logging.DEBUG)
 
     # Scan for video files.
     VideoFiles.Scan(path, files, mediaList, subdirs, root)
@@ -130,7 +145,7 @@ def Scan(path, files, mediaList, subdirs, language=None, root=None):
     for i in files:
         logging.debug('Processing: %s' % i)
 
-        file = remove_prefix(i, root + '/')
+        file = remove_prefix(i, root + '\\' if is_windows else '/')
         match = re.search(episode_regexp, file)
         if match:
             logging.debug("Regex matched file:" + file)
@@ -177,6 +192,11 @@ def Scan(path, files, mediaList, subdirs, language=None, root=None):
                     episode,              # episode, indexed the files for a given show/location
                     description,          # includes location string and ep name i.e. Spain Grand Prix Qualifying
                     year)                 # the actual year detected, same as used in part of the show name
+                
+                # force set the title + title_sort to the library_name, otherwise it will default to the folder name
+
+                tv_show.title = library_name
+                tv_show.title_sort = library_name
 
             except Exception as e:
                 logging.error(e)
